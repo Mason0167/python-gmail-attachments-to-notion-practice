@@ -230,11 +230,3 @@ def parse_zip(file_path, PDF_PASSWORD=None):
         trades.append(trade)
 
     return trades
-        
-
-    
-    
-
-    
-    
-    

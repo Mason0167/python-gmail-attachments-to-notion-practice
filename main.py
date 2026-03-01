@@ -64,4 +64,3 @@ for file_path in PDF_DIR.iterdir():
         print("\n", trade)
         create_notion_page(trade, NOTION_TOKEN, DB_ID, filename)
 
-1. Create a function for documenting the trade record information that is failed to insert into Notion. 2. Print important messages in terminal for better understanding the current program status. 3. Save all email id that processed was before.
