@@ -1,0 +1,18 @@
+[
+  {
+    "Trade File": "TSSCO_Bill202510.zip",
+    "Trade": {
+      "Currency": "TWD",
+      "Tax": 0,
+      "Trade Date": "2025-10-03",
+      "Company Name": "FB台50",
+      "Quantity": 36.0,
+      "Execution Price": 138.13,
+      "Commission": 1.0,
+      "Side": "Buy",
+      "Ticker": "006208",
+      "Total Amount": -4973.0
+    },
+    "Error Text": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n</body>\r\n</html>\r\n"
+  }
+]

@@ -1,0 +1,33 @@
+# Python virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# IDE / editor configs
+.vscode/
+.idea/
+*.swp
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Credentials and sensitive files
+credentials.json
+secret.py
+state.json
+
+# Logs
+*.log
+
+# folders
+transaction_records/
