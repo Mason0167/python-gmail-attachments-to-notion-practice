@@ -2,10 +2,12 @@
 A Python automation pipeline that retrieves financial transaction emails from Gmail, extracts trade data from PDF/ZIP attachments, and inserts structured records into a Notion database.
 
 The system includes duplicate prevention, state tracking, and error logging for failed inserts.
+
 ---
 ## Architecture
 
 Gmail API → Attachment Parser → Data Transformation → Notion API
+
 ---
 ## Features
 
@@ -14,6 +16,7 @@ Gmail API → Attachment Parser → Data Transformation → Notion API
 - Automated Notion database insertion
 - Duplicate email detection using message IDs
 - Failed insert logging
+
 ---
 ## State Management
 
