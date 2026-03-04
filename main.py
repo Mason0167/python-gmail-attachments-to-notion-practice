@@ -3,39 +3,41 @@ from attachment_handler import *
 from notion_handler import *
 from config import *
 
-# # Load the state
-# state = load_state(STATE_FILE)
-# processed_ids = set(state["processed_ids"])
+# Load the state
+state = load_state(STATE_FILE)
+# Get the set list (unique)
+processed_ids = set(state["processed_ids"])
 
-# # Filter emails then download the attachment
-# service = get_service(PATH, SCOPES)
-# messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
+# Filter emails then download the attachment
+service = get_service(PATH_TO_CREDENTIALS, SCOPES)
+messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
 
-# count = 0
-# for msg in messages:
-#     msg_id = msg["id"]
+count = 0
+for msg in messages:
+    msg_id = msg["id"]
 
-#     if msg_id in processed_ids:
-#         continue
+    if msg_id in processed_ids:
+        continue
 
-#     result = gmail_parser(msg, service)
-#     if not result:
-#         continue
+    result = gmail_parser(msg, service)
+    # No attachment = skip the mail
+    if not result:
+        continue
 
-#     count += 1
-#     filename, filedata = result
+    count += 1
+    filename, filedata = result
         
-#     download_attachment(filename, filedata, PDF_DIR)
+    download_attachment(filename, filedata, PDF_DIR)
 
-#     processed_ids.add(msg_id)
+    processed_ids.add(msg_id)
 
-# state["processed_ids"] = list(processed_ids)
-# save_state(state, STATE_FILE)
+state["processed_ids"] = list(processed_ids)
+save_state(state, STATE_FILE)
 
-# if count == 0:
-#     print("\nNo new attachments found.")
-# else:
-#     print("\n", count, " new attachments have been downloaded.")
+if count == 0:
+    print("\nNo new attachments found.")
+else:
+    print("\n", count, " new attachments have been downloaded.")
 
 
 

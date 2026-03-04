@@ -1,6 +1,7 @@
 from secret import *
 from pathlib import Path
 
+# List of permission scopes
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 SENDER_ADDRESS = "service@billu.tssco.com.tw"
 SUBJECT_KEYWORDS = [
@@ -13,6 +14,7 @@ STATE_FILE = "state.json"
 FAILED_TRADE_FILE = "failed_trades.json"
 
 PDF_PASSWORD = PDF_PASSWORD_SECRET
-PATH = PATH_SECRET
+# Path to credentials.json, which I downloaded from Google
+PATH_TO_CREDENTIALS = PATH_TO_CREDENTIALS_SECRET
 NOTION_TOKEN = NOTION_TOKEN_SECRET
 DB_ID = DB_ID_SECRET

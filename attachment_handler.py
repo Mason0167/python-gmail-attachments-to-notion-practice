@@ -6,7 +6,7 @@ from pypdf import PdfReader
 
 
 def download_attachment(filename, filedata, PDF_DIR):
-    # __file__ 是程式檔案路徑
+    # __file__ is the path of this program
     base_dir = os.path.dirname(os.path.abspath(__file__))  
     save_path = os.path.join(base_dir, PDF_DIR)
 
@@ -23,15 +23,15 @@ def download_attachment(filename, filedata, PDF_DIR):
 
 
 
-def parse_USA_pdf(file_path, password=None):
+def parse_USA_pdf(file_path, PDF_PASSWORD=None):
     base_dir = os.path.dirname(os.path.abspath(__file__))  
     file_path = os.path.join(base_dir, file_path)
 
     reader = PdfReader(file_path)
     if reader.is_encrypted:
-        if password is None:
+        if PDF_PASSWORD is None:
             raise ValueError(f"{file_path} is encrypted but no password provided")
-        reader.decrypt(password)
+        reader.decrypt(PDF_PASSWORD)
 
     # Extract Text
     text = ""
@@ -72,15 +72,15 @@ def parse_USA_pdf(file_path, password=None):
 
 
 
-def parse_TW_pdf(file_path, password=None):
+def parse_TW_pdf(file_path, PDF_PASSWORD=None):
     base_dir = os.path.dirname(os.path.abspath(__file__))  
     file_path = os.path.join(base_dir, file_path)
 
     reader = PdfReader(file_path)
     if reader.is_encrypted:
-        if password is None:
+        if PDF_PASSWORD is None:
             raise ValueError(f"{file_path} is encrypted but no password provided")
-        reader.decrypt(password)
+        reader.decrypt(PDF_PASSWORD)
 
     # Extract Text
     text = ""
