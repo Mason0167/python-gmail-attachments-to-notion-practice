@@ -3,12 +3,12 @@ A Python automation pipeline that retrieves financial transaction emails from Gm
 
 The system includes duplicate prevention, state tracking, and error logging for failed inserts.
 
----
+
 ## Architecture
 
 Gmail API → Attachment Parser → Data Transformation → Notion API
 
----
+
 ## Features
 
 - Gmail API integration
@@ -17,7 +17,7 @@ Gmail API → Attachment Parser → Data Transformation → Notion API
 - Duplicate email detection using message IDs
 - Failed insert logging
 
----
+
 ## State Management
 
 Processed email IDs are stored in `state.json` to prevent duplicate processing.
