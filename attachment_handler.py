@@ -86,10 +86,10 @@ def parse_TW_pdf(file_path, PDF_PASSWORD=None):
     text = ""
     for page in reader.pages:
         page_text = page.extract_text()
-        if "若有任何疑問" in page_text:
-            break
         if page_text:
             text += page_text + "\n"
+    
+    
        
     # Choose lines
     lines = text.splitlines()
@@ -109,7 +109,6 @@ def parse_TW_pdf(file_path, PDF_PASSWORD=None):
         if buffer and ("現買" in line or "現賣" in line):
             full_text += buffer + " " + line + "\n"
             buffer = None
-
 
     filename = os.path.basename(file_path)
     # Extract year

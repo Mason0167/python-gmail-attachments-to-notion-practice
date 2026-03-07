@@ -25,8 +25,9 @@ def get_service(PATH_TO_CREDENTIALS, SCOPES):
 def get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service):
     # Combine keywords into one query using OR
     # Unseen email: f'from:{SENDER_ADDRESS} is:unread'
-    query = f'from:{SENDER_ADDRESS} ' + \
-        " OR ".join([f'subject:"{k}"' for k in SUBJECT_KEYWORDS])
+    query = f'from:{SENDER_ADDRESS} (' + \
+        " OR ".join([f'subject:\"{k}\"' for k in SUBJECT_KEYWORDS]) + \
+        ')'
 
     # API call
     # List messages matching query
@@ -87,6 +88,7 @@ def gmail_parser(msg, service):
             else:
                 continue
             
+            # Store multiple attachments
             attachments.append((filename, filedata))
 
         return attachments if attachments else None

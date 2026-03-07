@@ -9,9 +9,13 @@ SUBJECT_KEYWORDS = [
     "台新綜合證券",
     "台新證券受託買賣外國有價證券確認書"
 ]
-PDF_DIR = Path("transaction_records")
-STATE_FILE = "state.json"
-FAILED_TRADE_FILE = "failed_trades.json"
+
+# type: Path -> Using pathlib.Path
+PDF_DIR = Path(r"C:\Users\mason\python\python-email-pdf-parsing-practice\transaction_records")
+
+# type: str -> read/write json file
+STATE_FILE = r"C:\Users\mason\python\python-email-pdf-parsing-practice\state.json"
+FAILED_TRADE_FILE = r"C:\Users\mason\python\python-email-pdf-parsing-practice\failed_trades.json"
 
 PDF_PASSWORD = PDF_PASSWORD_SECRET
 # Path to credentials.json, which I downloaded from Google
