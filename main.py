@@ -4,48 +4,48 @@ from notion_handler import *
 from config import *
 
 
-# # Load the state
-# state = load_state(STATE_FILE)
-# print("Loaded state:", state)
-# # Get the set list (unique)
-# processed_ids = set(state["processed_ids"])
-# print("Loaded processed_ids:", processed_ids)
+# Load the state
+state = load_state(STATE_FILE)
+print("Loaded state:", state)
+# Get the set list (unique)
+processed_ids = set(state["processed_ids"])
+print("Loaded processed_ids:", processed_ids)
 
-# # Filter emails then download the attachment
-# service = get_service(PATH_TO_CREDENTIALS, SCOPES)
-# messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
+# Filter emails then download the attachment
+service = get_service(PATH_TO_CREDENTIALS, SCOPES)
+messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
 
-# count = 0
-# for msg in messages:
+count = 0
+for msg in messages:
     
-#     msg_id = msg["id"]
+    msg_id = msg["id"]
 
-#     if msg_id in processed_ids:
-#         continue
+    if msg_id in processed_ids:
+        continue
 
-#     attachments = gmail_parser(msg, service)
-#     # No attachment = skip the mail
-#     if not attachments:
-#         continue
+    attachments = gmail_parser(msg, service)
+    # No attachment = skip the mail
+    if not attachments:
+        continue
 
-#     count += 1
+    count += 1
 
-#     for filename, filedata in attachments:
-#         if filename.lower().endswith(".p7s"):
-#             print("Skipping:", filename)
-#             continue
+    for filename, filedata in attachments:
+        if filename.lower().endswith(".p7s"):
+            print("Skipping:", filename)
+            continue
 
-#         download_attachment(filename, filedata, PDF_DIR)
+        download_attachment(filename, filedata, PDF_DIR)
 
-#     processed_ids.add(msg_id)
+    processed_ids.add(msg_id)
 
-# state["processed_ids"] = list(processed_ids)
-# save_state(state, STATE_FILE)
+state["processed_ids"] = list(processed_ids)
+save_state(state, STATE_FILE)
 
-# if count == 0:
-#     print("\nNo new attachments found.")
-# else:
-#     print("\n", count, " new attachments have been downloaded.")
+if count == 0:
+    print("\nNo new attachments found.")
+else:
+    print("\n", count, " new attachments have been downloaded.")
 
 
 

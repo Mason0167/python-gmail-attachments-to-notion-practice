@@ -11,11 +11,11 @@ SUBJECT_KEYWORDS = [
 ]
 
 # type: Path -> Using pathlib.Path
-PDF_DIR = Path(r"C:\Users\mason\python\python-email-pdf-parsing-practice\transaction_records")
+PDF_DIR = Path(r"C:\Users\mason\python\python-gmail-attachments-to-notion-practice\transaction_records")
 
 # type: str -> read/write json file
-STATE_FILE = r"C:\Users\mason\python\python-email-pdf-parsing-practice\state.json"
-FAILED_TRADE_FILE = r"C:\Users\mason\python\python-email-pdf-parsing-practice\failed_trades.json"
+STATE_FILE = r"C:\Users\mason\python\python-gmail-attachments-to-notion-practice\state.json"
+FAILED_TRADE_FILE = r"C:\Users\mason\python\python-gmail-attachments-to-notion-practice\failed_trades.json"
 
 PDF_PASSWORD = PDF_PASSWORD_SECRET
 # Path to credentials.json, which I downloaded from Google
