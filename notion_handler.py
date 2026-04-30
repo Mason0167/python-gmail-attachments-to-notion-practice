@@ -30,7 +30,8 @@ def process_failed_item(failed_item):
 
 
 
-def create_notion_page(trade: dict, NOTION_TOKEN, DB_ID, filename):
+def create_notion_page(trade: dict, NOTION_TOKEN, DB_ID):
+
     headers = {
         "Authorization": f"Bearer {NOTION_TOKEN}",
         "Notion-Version": "2022-06-28",
@@ -62,25 +63,11 @@ def create_notion_page(trade: dict, NOTION_TOKEN, DB_ID, filename):
         }
     }
 
-    res = requests.post(
+    return requests.post(
         "https://api.notion.com/v1/pages",
         headers=headers,
         json=data
     )
-    failed_item = {}
-    if res.status_code >= 400:
-        failed_item = {
-            "Trade File": filename,
-            "Trade": trade, 
-            "Error Text": res.text
-        }
-        process_failed_item(failed_item)
-
-    elif res.status_code == 200:
-        print(res.status_code)
-    print("------------------------")
-
-
 
 def normalize_trade(trade: dict) -> dict:
     TaxValue = trade.get("Tax")
@@ -92,14 +79,8 @@ def normalize_trade(trade: dict) -> dict:
         TradeDay = TradeDay.strip("@")
     trade["Trade Date"] = date(int(TradeYear), int(TradeMonth), int(TradeDay)).isoformat()
 
-
-    if "," in trade["Quantity"]:
-        Qty = trade["Quantity"].replace(",", "")
-        trade["Quantity"] = float(Qty)
-    else:
-        trade["Quantity"] = float(trade["Quantity"])
-
-    trade["Execution Price"] = float(trade["Execution Price"])
+    trade["Quantity"] = float(trade["Quantity"].replace(",", ""))
+    trade["Execution Price"] = float(trade["Execution Price"].replace(",", ""))
     trade["Commission"] = float(trade["Commission"])
 
     if '現買' in trade["Side"] or '-' in trade["Side"]:
@@ -110,8 +91,7 @@ def normalize_trade(trade: dict) -> dict:
     if "(" in trade["Ticker"]:
         trade["Ticker"] = trade["Ticker"].strip("()")
 
-    TotalAmount = trade["Total Amount"].replace(",", "")
-    trade["Total Amount"] = float(TotalAmount)
+    trade["Total Amount"] = float(trade["Total Amount"].replace(",", ""))
 
     return {
         "Currency": trade["Currency"],

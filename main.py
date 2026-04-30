@@ -4,89 +4,164 @@ from notion_handler import *
 from config import *
 
 
-# Load the state
-state = load_state(STATE_FILE)
-print("Loaded state:", state)
-# Get the set list (unique)
-processed_ids = set(state["processed_ids"])
-print("Loaded processed_ids:", processed_ids)
+# Get data from gmail source
+def fetch_from_gmail(messages, service):
+    attachment_count = 0
+    for msg in messages:
 
-# Filter emails then download the attachment
-service = get_service(PATH_TO_CREDENTIALS, SCOPES)
-messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
-
-count = 0
-for msg in messages:
-    
-    msg_id = msg["id"]
-
-    if msg_id in processed_ids:
-        continue
-
-    attachments = gmail_parser(msg, service)
-    # No attachment = skip the mail
-    if not attachments:
-        continue
-
-    count += 1
-
-    for filename, filedata in attachments:
-        if filename.lower().endswith(".p7s"):
-            print("Skipping:", filename)
+        # Skip if the mail had been processed
+        msg_id = msg["id"]
+        if msg_id in processed_ids:
             continue
 
-        download_attachment(filename, filedata, PDF_DIR)
+        # Count how many new attachment
+        attachment_count += 1
 
-    processed_ids.add(msg_id)
+        # Store the id 
+        processed_ids.add(msg_id)
 
-state["processed_ids"] = list(processed_ids)
-save_state(state, STATE_FILE)
+        # Fetch the attachment
+        attachments = gmail_parser(msg, service)
+        
+        # Skip if the mail has no attachment
+        if not attachments:
+            continue
 
-if count == 0:
-    print("\nNo new attachments found.")
-else:
-    print("\n", count, " new attachments have been downloaded.")
+        # Stop and give a value
+        for filename, filedata in attachments:
+            yield filename, filedata
+    
+    if attachment_count == 0:
+        print("\nNo new attachments found.")
+    else:
+        print(attachment_count, " new attachments were found.")
+
+    print("=========================================================================================")
 
 
+# Get data from directory source (failed items)
+def fetch_from_dir(PDF_DIR):
+    # Check item
+    if not any(PDF_DIR.iterdir()):
+        return
+    
+    for file_path in PDF_DIR.iterdir():
+        print(file_path)
+        # Check if the path exist and if it's a regular file
+        if not file_path.is_file():
+            continue
 
-for file_path in PDF_DIR.iterdir():
-    if not file_path.is_file():
-        continue
+        # Skip S/MIME
+        if file_path.name.lower().endswith(".p7s"):
+            print("Skipping:", file_path.name)
+            continue
+
+        # Read the binary file
+        with open(file_path, "rb") as f:
+            filedata = f.read()
+
+        yield file_path.name, filedata
+
+def process_file(filename, filedata):
+    filename = Path(filename)
 
     try:
-        suffix = file_path.suffix.lower()
+        suffix = filename.suffix.lower()
 
-        filename = os.path.basename(file_path)
-        print("=========================================================================================")
         if suffix == ".pdf":
-            if "受託" in filename:
-                print("\nProcessing PDF:", file_path)
-                trades = parse_USA_pdf(file_path, PDF_PASSWORD)
+
+            if "受託" in filename.name:
+                print("Processing PDF:", filename.name)
+                print("=========================================================================================")
+
+                trades = parse_USA_pdf(filedata, PDF_PASSWORD)
             else:
-                print("\nProcessing PDF:", file_path)
-                trades = parse_TW_pdf(file_path, PDF_PASSWORD)
+                print("Processing PDF:", filename.name)
+                print("=========================================================================================")
+
+                trades = parse_TW_pdf(filedata, filename.name, PDF_PASSWORD)
 
         elif suffix == ".zip":
-            print("\nProcessing ZIP:", file_path)
-            trades = parse_zip(file_path, PDF_PASSWORD)
+            print("Processing ZIP:", filename.name)
+            print("=========================================================================================")
+
+            trades = parse_zip(filedata, filename.name, PDF_PASSWORD)
+
+        elif suffix == ".p7s":
+            return
 
         else:
-            print("Unknown file type:", file_path)
-            continue
+            print("Unknown file type:", filename.name)
+            print("=========================================================================================")
+            return
 
         if not trades:
             print("No trades found")
-            continue
-
-        success = True
+            return
+        
+        totalCount = 0
+        successCount = 0
+        failedCount = 0
 
         for trade in trades:
             normalize_trade(trade)
-            print("\n", trade)
-            create_notion_page(trade, NOTION_TOKEN, DB_ID, filename)
+            print(trade)
 
-        file_path.unlink()
-    
+            res = create_notion_page(trade, NOTION_TOKEN, DB_ID)
+
+            totalCount += 1
+
+            # Process both success and failed item
+            failed_item = {}
+            if res.status_code >= 400:
+                failed_item = {
+                    "Trade File": filename.name,
+                    "Trade": trade, 
+                    "Error Text": res.text
+                }
+                process_failed_item(failed_item)
+                failedCount += 1
+                print("This item has failed.")
+
+            elif res.status_code == 200:
+                successCount += 1
+                print("This item has succeeded.")
+
+            print("=========================================================================================")
+
+        print("Total processed trade: ",  totalCount)
+        print("Success trade: ", successCount)
+        print("Failed trade: ", failedCount)
+        print("=========================================================================================")
+
+
+
     except Exception as e:
-        print("Processing failed:", e)
+        print("Failed:", e)
+        download_attachment(filename, filedata, PDF_DIR)
 
+
+'''
+===== Main Process =====
+'''
+# Load the state
+state = load_state(STATE_FILE)
+
+# Get the set list (unique)
+processed_ids = set(state["processed_ids"])
+print("Loaded processed_ids:", processed_ids, "\n")
+
+# Filter emails
+service = get_service(PATH_TO_CREDENTIALS, SCOPES)
+messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
+
+# Choose source
+source = fetch_from_gmail(messages, service)
+# source = fetch_from_dir(PDF_DIR)
+
+for filename, filedata in source:
+    process_file(filename, filedata)
+
+# Save the mail id which are processed
+state["processed_ids"] = list(processed_ids)
+save_state(state, STATE_FILE)
