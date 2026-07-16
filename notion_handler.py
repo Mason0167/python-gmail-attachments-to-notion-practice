@@ -93,6 +93,7 @@ def normalize_trade(trade: dict) -> dict:
 
     trade["Total Amount"] = float(trade["Total Amount"].replace(",", ""))
 
+
     return {
         "Currency": trade["Currency"],
         "Tax": trade["Tax"],

@@ -156,8 +156,10 @@ service = get_service(PATH_TO_CREDENTIALS, SCOPES)
 messages = get_message(SENDER_ADDRESS, SUBJECT_KEYWORDS, service)
 
 # Choose source
+print("Processing ", processed_ids)
 source = fetch_from_gmail(messages, service)
-# source = fetch_from_dir(PDF_DIR)
+
+source = fetch_from_dir(PDF_DIR)
 
 for filename, filedata in source:
     process_file(filename, filedata)

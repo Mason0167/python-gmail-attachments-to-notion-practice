@@ -1,5 +1,5 @@
 import os
-import re
+from decimal import Decimal
 import io
 import zipfile
 from bs4 import BeautifulSoup
@@ -42,26 +42,35 @@ def parse_USA_pdf(filedata, PDF_PASSWORD=None):
         trades = []
 
         for line in lines:
+            commission = ""
+
         # Filter by 2 strings
-            if "202" not in line or "-" not in line:
-                continue
+            if "202" in line:
 
-            parts = line.split()
+                parts = line.split()
 
-            Tax = 0
-            trade = {
-                "Ticker": parts[3],
-                "Company Name": "",
-                "Side": parts[10],
-                "Execution Price": parts[6],
-                "Quantity": parts[5],
-                "Commission": parts[8],
-                "Tax": Tax,
-                "Currency": parts[2],
-                "Total Amount": parts[10],
-                "Trade Date": parts[0]
-            }
-            trades.append(trade)
+                if len(parts) < 9:
+                    continue
+
+                if "-" in line:
+                    commission = (Decimal(parts[10].replace(",", "")) + Decimal(parts[6].replace(",", ""))) * -1
+                if "-" not in line:
+                    commission = Decimal(parts[6].replace(",", "")) - Decimal(parts[10].replace(",", ""))
+
+                Tax = 0
+                trade = {
+                    "Ticker": parts[3],
+                    "Company Name": "",
+                    "Side": parts[10],
+                    "Execution Price": parts[6],
+                    "Quantity": parts[5],
+                    "Commission": float(commission),
+                    "Tax": Tax,
+                    "Currency": parts[2],
+                    "Total Amount": parts[10],
+                    "Trade Date": parts[0]
+                }
+                trades.append(trade)
         
         return trades
 
